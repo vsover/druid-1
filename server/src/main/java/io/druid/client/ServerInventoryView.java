@@ -136,13 +136,13 @@ public abstract class ServerInventoryView<InventoryType> implements ServerView, 
           @Override
           public void newContainer(DruidServer container)
           {
-            log.info("New Server[%s]", container);
+            log.debug("New Server[%s]", container);
           }
 
           @Override
           public void deadContainer(DruidServer deadContainer)
           {
-            log.info("Server Disappeared[%s]", deadContainer);
+            log.debug("Server Disappeared[%s]", deadContainer);
             runServerCallbacks(deadContainer);
           }
 
@@ -179,7 +179,7 @@ public abstract class ServerInventoryView<InventoryType> implements ServerView, 
           @Override
           public void inventoryInitialized()
           {
-            log.info("Inventory Initialized");
+            log.debug("Inventory Initialized");
             runSegmentCallbacks(
                 new Function<SegmentCallback, CallbackAction>()
                 {
@@ -293,7 +293,7 @@ public abstract class ServerInventoryView<InventoryType> implements ServerView, 
       final DataSegment inventory
   )
   {
-    log.info("Server[%s] added segment[%s]", container.getName(), inventory.getIdentifier());
+    log.debug("Server[%s] added segment[%s]", container.getName(), inventory.getIdentifier());
 
     if (container.getSegment(inventory.getIdentifier()) != null) {
       log.warn(
@@ -321,7 +321,7 @@ public abstract class ServerInventoryView<InventoryType> implements ServerView, 
 
   protected void removeSingleInventory(final DruidServer container, String inventoryKey)
   {
-    log.info("Server[%s] removed segment[%s]", container.getName(), inventoryKey);
+    log.debug("Server[%s] removed segment[%s]", container.getName(), inventoryKey);
     final DataSegment segment = container.getSegment(inventoryKey);
 
     if (segment == null) {

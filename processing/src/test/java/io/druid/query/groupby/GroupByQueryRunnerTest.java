@@ -45,6 +45,7 @@ import io.druid.query.aggregation.JavaScriptAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.MaxAggregatorFactory;
 import io.druid.query.aggregation.PostAggregator;
+import io.druid.query.aggregation.hyperloglog.HyperUniqueFinalizingPostAggregator;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import io.druid.query.aggregation.post.ArithmeticPostAggregator;
 import io.druid.query.aggregation.post.ConstantPostAggregator;
@@ -241,6 +242,44 @@ public class GroupByQueryRunnerTest
             "rows",
             26L,
             "uniques",
+            QueryRunnerTestHelper.UNIQUES_9
+        )
+    );
+
+    Iterable<Row> results = GroupByQueryRunnerTestHelper.runQuery(factory, runner, query);
+    TestHelper.assertExpectedObjects(expectedResults, results, "");
+  }
+
+  @Test
+  public void testGroupByWithUniquesAndPostAggWithSameName()
+  {
+    GroupByQuery query = GroupByQuery
+        .builder()
+        .setDataSource(QueryRunnerTestHelper.dataSource)
+        .setQuerySegmentSpec(QueryRunnerTestHelper.firstToThird)
+        .setAggregatorSpecs(
+            Arrays.<AggregatorFactory>asList(
+                QueryRunnerTestHelper.rowsCount,
+                new HyperUniquesAggregatorFactory(
+                    "quality_uniques",
+                    "quality_uniques"
+                )
+            )
+        )
+        .setPostAggregatorSpecs(
+            Arrays.<PostAggregator>asList(
+                new HyperUniqueFinalizingPostAggregator("quality_uniques")
+            )
+        )
+        .setGranularity(QueryRunnerTestHelper.allGran)
+        .build();
+
+    List<Row> expectedResults = Arrays.asList(
+        GroupByQueryRunnerTestHelper.createExpectedRow(
+            "2011-04-01",
+            "rows",
+            26L,
+            "quality_uniques",
             QueryRunnerTestHelper.UNIQUES_9
         )
     );
